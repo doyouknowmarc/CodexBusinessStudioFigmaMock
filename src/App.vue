@@ -25,6 +25,7 @@ import linkExternal02 from './data/icons/link-external-02.svg';
 import lockUnlocked03 from './data/icons/lock-unlocked-03.svg';
 import plusIcon from './data/icons/plus.svg';
 import scale01 from './data/icons/scale-01.svg';
+import searchLgGrey from './data/icons/search-lg-grey.svg';
 import searchLg from './data/icons/search-lg.svg';
 import searchSm from './data/icons/search-sm.svg';
 import server03 from './data/icons/server-03.svg';
@@ -157,18 +158,10 @@ const groupedItems = [
 
 const tabs = ['My details', 'Profile', 'Password', 'Team'];
 
-function getInitiallyOpenMenus() {
-  return new Set(
-    [...generalItems, ...groupedItems.flatMap((group) => group.items)]
-      .filter((item) => item.expanded)
-      .map((item) => item.label),
-  );
-}
-
 const selectedItem = ref('Applications');
 const searchQuery = ref('');
 const isCollapsed = ref(false);
-const openMenus = ref(getInitiallyOpenMenus());
+const openMenus = ref(new Set());
 
 const collapseLabel = computed(() => (isCollapsed.value ? 'Expand menu' : 'Collapse menu'));
 const isApplicationsView = computed(() => selectedItem.value === 'Applications');
@@ -436,7 +429,7 @@ function toggleSidebar() {
             </div>
 
             <label class="applications-search" aria-label="Search applications">
-              <img class="applications-search__icon" :src="searchLg" alt="" />
+              <img class="applications-search__icon" :src="searchLgGrey" alt="" />
               <input v-model="searchQuery" type="text" placeholder="Search" />
             </label>
           </section>
