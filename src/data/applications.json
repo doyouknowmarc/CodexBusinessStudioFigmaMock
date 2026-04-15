@@ -1,0 +1,98 @@
+[
+  {
+    "id": "document-management-suite",
+    "title": "Marc Management",
+    "vendor": "by SER Group",
+    "description": "Improve your HR document management with Doxis and SAP SuccessFactors for certified integration with the SAP HR system.",
+    "owner": "SER Managed",
+    "version": "v.12.2"
+  },
+  {
+    "id": "invoice-automation",
+    "title": "Invoice Automation",
+    "vendor": "by SER Group",
+    "description": "Automate invoice intake, validation, and approval workflows with configurable extraction pipelines and posting rules.",
+    "owner": "Customer Hosted",
+    "version": "v.4.8"
+  },
+  {
+    "id": "contract-lifecycle",
+    "title": "Contract Lifecycle",
+    "vendor": "by SER Group",
+    "description": "Track authoring, redlining, renewals, and compliance obligations for legal teams across global entities.",
+    "owner": "SER Managed",
+    "version": "v.7.1"
+  },
+  {
+    "id": "case-management",
+    "title": "Case Management",
+    "vendor": "by SER Group",
+    "description": "Manage service requests and internal cases with structured steps, shared notes, escalations, and audit history.",
+    "owner": "SER Managed",
+    "version": "v.9.4"
+  },
+  {
+    "id": "employee-files",
+    "title": "Employee Files",
+    "vendor": "by SER Group",
+    "description": "Centralize employee records, onboarding documents, and retention controls with secure role-based access.",
+    "owner": "Customer Hosted",
+    "version": "v.5.6"
+  },
+  {
+    "id": "quality-records",
+    "title": "Quality Records",
+    "vendor": "by SER Group",
+    "description": "Store quality evidence, deviations, CAPAs, and review packages in a single governed repository.",
+    "owner": "SER Managed",
+    "version": "v.3.9"
+  },
+  {
+    "id": "supplier-portal",
+    "title": "Supplier Portal",
+    "vendor": "by SER Group",
+    "description": "Share procurement documents, exchange onboarding forms, and monitor supplier compliance status in one workspace.",
+    "owner": "Partner Operated",
+    "version": "v.2.7"
+  },
+  {
+    "id": "claims-processing",
+    "title": "Claims Processing",
+    "vendor": "by SER Group",
+    "description": "Handle insurance claim intake, supporting evidence, adjuster collaboration, and status tracking from one cockpit.",
+    "owner": "Customer Hosted",
+    "version": "v.8.0"
+  },
+  {
+    "id": "project-archive",
+    "title": "Project Archive",
+    "vendor": "by SER Group",
+    "description": "Archive project correspondence, drawings, and final handover packages with controlled long-term retention.",
+    "owner": "SER Managed",
+    "version": "v.6.3"
+  },
+  {
+    "id": "compliance-hub",
+    "title": "Compliance Hub",
+    "vendor": "by SER Group",
+    "description": "Bundle policies, attestations, review cycles, and evidence collection for internal and external audits.",
+    "owner": "SER Managed",
+    "version": "v.11.0"
+  },
+  {
+    "id": "knowledge-center",
+    "title": "Knowledge Center",
+    "vendor": "by SER Group",
+    "description": "Curate procedures, templates, and department guidance with review workflows and controlled publishing.",
+    "owner": "Customer Hosted",
+    "version": "v.10.5"
+  },
+  {
+    "id": "customer-correspondence",
+    "title": "Customer Correspondence",
+    "vendor": "by SER Group",
+    "description": "Capture inbound letters and emails, classify interactions, and keep customer communication histories complete.",
+    "owner": "SER Managed",
+    "version": "v.5.1"
+  }
+]

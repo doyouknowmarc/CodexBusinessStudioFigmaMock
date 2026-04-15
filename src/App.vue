@@ -1,36 +1,36 @@
 <script setup>
 import { computed, ref } from 'vue';
+import applicationCards from './data/applications.json';
 import barChartSquare02 from './data/icons/bar-chart-square-02.svg';
+import bell01 from './data/icons/bell-01.svg';
 import bookOpen01 from './data/icons/book-open-01.svg';
 import building07 from './data/icons/building-07.svg';
 import calendar from './data/icons/calendar.svg';
 import chevronDown from './data/icons/chevron-down.svg';
 import clockFastForward from './data/icons/clock-fast-forward.svg';
+import colorsIcon from './data/icons/colors.svg';
 import cpuChip01 from './data/icons/cpu-chip-01.svg';
 import dataIcon from './data/icons/data.svg';
 import database02 from './data/icons/database-02.svg';
+import dotsVertical from './data/icons/dots-vertical.svg';
 import file02 from './data/icons/file-02.svg';
 import fileCheck02 from './data/icons/file-check-02.svg';
 import fileDownload01 from './data/icons/file-download-01.svg';
 import grid01 from './data/icons/grid-01.svg';
+import helpCircle from './data/icons/help-circle.svg';
 import intersectSquare from './data/icons/intersect-square.svg';
 import layoutLeft from './data/icons/layout-left.svg';
 import link04 from './data/icons/link-04.svg';
 import linkExternal02 from './data/icons/link-external-02.svg';
 import lockUnlocked03 from './data/icons/lock-unlocked-03.svg';
+import plusIcon from './data/icons/plus.svg';
 import scale01 from './data/icons/scale-01.svg';
 import searchLg from './data/icons/search-lg.svg';
 import searchSm from './data/icons/search-sm.svg';
 import server03 from './data/icons/server-03.svg';
 import server04 from './data/icons/server-04.svg';
 import tool02 from './data/icons/tool-02.svg';
-import bell01 from './data/icons/bell-01.svg';
-import helpCircle from './data/icons/help-circle.svg';
 import unionLogo from './data/icons/Union.svg';
-
-const selectedItem = ref(null);
-const isCollapsed = ref(false);
-const openMenus = ref(new Set());
 
 const icons = {
   overview: barChartSquare02,
@@ -155,7 +155,39 @@ const groupedItems = [
   },
 ];
 
+const tabs = ['My details', 'Profile', 'Password', 'Team'];
+
+function getInitiallyOpenMenus() {
+  return new Set(
+    [...generalItems, ...groupedItems.flatMap((group) => group.items)]
+      .filter((item) => item.expanded)
+      .map((item) => item.label),
+  );
+}
+
+const selectedItem = ref('Applications');
+const searchQuery = ref('');
+const isCollapsed = ref(false);
+const openMenus = ref(getInitiallyOpenMenus());
+
 const collapseLabel = computed(() => (isCollapsed.value ? 'Expand menu' : 'Collapse menu'));
+const isApplicationsView = computed(() => selectedItem.value === 'Applications');
+
+const filteredApplications = computed(() => {
+  const normalizedQuery = searchQuery.value.trim().toLowerCase();
+
+  if (!normalizedQuery) {
+    return applicationCards;
+  }
+
+  return applicationCards.filter((card) =>
+    [card.title, card.vendor, card.description, card.owner, card.version].some((value) =>
+      value.toLowerCase().includes(normalizedQuery),
+    ),
+  );
+});
+
+const applicationsBadgeLabel = computed(() => `${filteredApplications.value.length} installed`);
 
 function isItemActive(label) {
   return selectedItem.value === label;
@@ -174,7 +206,12 @@ function selectItem(item) {
     toggleMenu(item);
     return;
   }
+
   selectedItem.value = item.label;
+
+  if (item.label !== 'Applications') {
+    searchQuery.value = '';
+  }
 }
 
 function toggleMenu(item) {
@@ -368,12 +405,84 @@ function toggleSidebar() {
       </aside>
 
       <main class="workspace" aria-live="polite">
-        <div class="workspace__content">
+        <section v-if="isApplicationsView" class="applications-view">
+          <header class="applications-header">
+            <div class="applications-header__text">
+              <div class="applications-header__title-row">
+                <h1 class="applications-title">Applications</h1>
+                <span class="applications-badge">{{ applicationsBadgeLabel }}</span>
+              </div>
+              <p class="applications-subtitle">All the ones currently installed in your system</p>
+            </div>
+
+            <button type="button" class="create-button" aria-disabled="true">
+              <img class="create-button__icon" :src="plusIcon" alt="" />
+              <span>Create new</span>
+            </button>
+          </header>
+
+          <section class="applications-toolbar" aria-label="Applications controls">
+            <div class="applications-tabs" aria-label="Application sections">
+              <button
+                v-for="(tab, index) in tabs"
+                :key="tab"
+                type="button"
+                class="applications-tab"
+                :class="{ 'is-active': index === 0 }"
+                :aria-pressed="index === 0 ? 'true' : 'false'"
+              >
+                {{ tab }}
+              </button>
+            </div>
+
+            <label class="applications-search" aria-label="Search applications">
+              <img class="applications-search__icon" :src="searchLg" alt="" />
+              <input v-model="searchQuery" type="text" placeholder="Search" />
+            </label>
+          </section>
+
+          <section class="applications-grid" aria-label="Installed applications">
+            <article
+              v-for="card in filteredApplications"
+              :key="card.id"
+              class="application-card"
+            >
+              <div class="application-card__top">
+                <div class="application-card__identity">
+                  <span class="application-card__icon-wrap" aria-hidden="true">
+                    <img class="application-card__icon" :src="colorsIcon" alt="" />
+                  </span>
+                  <div class="application-card__title-block">
+                    <h2 class="application-card__title">{{ card.title }}</h2>
+                    <p class="application-card__vendor">{{ card.vendor }}</p>
+                  </div>
+                </div>
+
+                <button type="button" class="application-card__menu" aria-label="More options">
+                  <img class="application-card__menu-icon" :src="dotsVertical" alt="" />
+                </button>
+              </div>
+
+              <p class="application-card__description">{{ card.description }}</p>
+
+              <div class="application-card__footer">
+                <span class="application-card__owner">{{ card.owner }}</span>
+                <span class="application-card__version">{{ card.version }}</span>
+              </div>
+            </article>
+
+            <p v-if="filteredApplications.length === 0" class="applications-empty">
+              No applications match your search.
+            </p>
+          </section>
+        </section>
+
+        <div v-else class="workspace__placeholder">
           <p class="workspace__eyebrow">Vue prototype</p>
           <h1 class="workspace__title">{{ selectedItem }}</h1>
           <p class="workspace__copy">
-            The layout now includes the missing top navigation from Figma above the menu, while
-            preserving the sidebar dimensions and interaction states from the previous pass.
+            The Applications section now follows the provided Figma design. Select
+            <strong> Applications </strong> in the sidebar to see the implemented screen.
           </p>
         </div>
       </main>
