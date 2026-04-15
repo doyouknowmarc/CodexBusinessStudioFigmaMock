@@ -8,7 +8,7 @@
   -moz-osx-font-smoothing: grayscale;
 
   --sidebar-width: 260px;
-  --sidebar-collapsed-width: 84px;
+  --sidebar-collapsed-width: 61px;
   --surface-primary: #ffffff;
   --surface-subtle: #f8faf9;
   --surface-hover: #f7fafb;
@@ -47,8 +47,9 @@ button {
 .app-shell {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  height: 100vh;
   color: var(--text-primary);
+  overflow: hidden;
 }
 
 .topbar {
@@ -185,13 +186,18 @@ button {
   display: flex;
   flex: 1;
   min-height: 0;
+  overflow: hidden;
 }
 
 .sidebar {
   display: flex;
+  position: sticky;
+  top: 0;
   width: var(--sidebar-width);
-  min-height: 0;
+  height: 100%;
   flex-direction: column;
+  flex: 0 0 var(--sidebar-width);
+  align-self: flex-start;
   background: var(--surface-primary);
   border-right: 1px solid var(--border-subtle);
   transition: width 180ms ease;
@@ -228,6 +234,21 @@ button {
   line-height: 18px;
 }
 
+.menu-group__header--collapsed {
+  justify-content: center;
+}
+
+.menu-group__divider {
+  display: block;
+  width: 29px;
+  height: 1px;
+  background: #e9eaeb;
+}
+
+.menu-block {
+  width: 100%;
+}
+
 .menu-item {
   width: 100%;
   padding: 2px 0;
@@ -236,6 +257,10 @@ button {
   color: inherit;
   text-align: left;
   cursor: pointer;
+}
+
+.menu-item--expandable {
+  cursor: default;
 }
 
 .menu-item__content {
@@ -276,6 +301,17 @@ button {
   color: var(--icon-default);
 }
 
+.menu-item__toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
 .menu-item:hover .menu-item__content {
   background: var(--surface-hover);
 }
@@ -308,6 +344,60 @@ button {
   height: 16px;
 }
 
+.menu-icon--expanded {
+  transform: rotate(180deg);
+}
+
+.submenu {
+  display: flex;
+  flex-direction: column;
+  padding: 2px 0 6px;
+}
+
+.submenu-item {
+  display: flex;
+  width: 100%;
+  min-height: 32px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 12px 6px 50px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-secondary);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+.submenu-item__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+}
+
+.submenu-item:hover {
+  background: var(--surface-hover);
+}
+
+.submenu-item.is-active {
+  background: var(--surface-active);
+  color: var(--text-brand);
+}
+
+.submenu-item.is-active .submenu-item__label {
+  color: var(--text-brand);
+}
+
+.submenu-item:focus-visible {
+  outline: 2px solid rgba(6, 96, 116, 0.28);
+  outline-offset: 2px;
+}
+
 .sidebar__footer {
   padding: 8px;
   border-top: 1px solid var(--border-subtle);
@@ -321,10 +411,12 @@ button {
   position: relative;
   display: flex;
   flex: 1;
+  min-height: 0;
   align-items: center;
   justify-content: center;
   padding: 32px;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .workspace::before {
@@ -379,16 +471,27 @@ button {
 
 .app-shell.is-collapsed .sidebar {
   width: var(--sidebar-collapsed-width);
+  flex-basis: var(--sidebar-collapsed-width);
+}
+
+.app-shell.is-collapsed .sidebar__cluster {
+  padding-inline: 8px;
 }
 
 .app-shell.is-collapsed .menu-item__content {
   justify-content: center;
-  padding-inline: 0;
+  padding: 8px;
 }
 
 .app-shell.is-collapsed .menu-item__lead {
   justify-content: center;
   flex: 0 0 auto;
+}
+
+.app-shell.is-collapsed .menu-item__toggle,
+.app-shell.is-collapsed .menu-item__meta,
+.app-shell.is-collapsed .submenu {
+  display: none;
 }
 
 @media (max-width: 780px) {
@@ -415,7 +518,9 @@ button {
   .sidebar,
   .app-shell.is-collapsed .sidebar {
     width: 100%;
+    height: auto;
     min-height: auto;
+    flex-basis: auto;
   }
 
   .sidebar {

@@ -28,8 +28,9 @@ import bell01 from './data/icons/bell-01.svg';
 import helpCircle from './data/icons/help-circle.svg';
 import unionLogo from './data/icons/Union.svg';
 
-const selectedItem = ref('Applications');
+const selectedItem = ref(null);
 const isCollapsed = ref(false);
+const openMenus = ref(new Set());
 
 const icons = {
   overview: barChartSquare02,
@@ -61,27 +62,65 @@ const generalItems = [
   { label: 'Overview', icon: 'overview' },
   { label: 'Library', icon: 'library' },
   { label: 'Applications', icon: 'applications' },
-  { label: 'Integrations', icon: 'integrations', chevron: true },
-  { label: 'AI studio', icon: 'aiStudio', chevron: true },
+  {
+    label: 'Integrations',
+    icon: 'integrations',
+    expanded: true,
+    children: [{ label: 'Accounts' }, { label: 'Flows' }],
+  },
+  {
+    label: 'AI studio',
+    icon: 'aiStudio',
+    expanded: true,
+    children: [
+      { label: 'Superhuman search' },
+      { label: 'Doxis machine learning', external: true },
+    ],
+  },
 ];
 
 const groupedItems = [
   {
-    title: 'Configuration',
+    title: 'Configurations',
     items: [
-      { label: 'General', icon: 'general', chevron: true },
+      {
+        label: 'General',
+        icon: 'general',
+        expanded: true,
+        children: [{ label: 'Namespaces' }, { label: 'Categories' }],
+      },
       { label: 'Databases', icon: 'databases' },
-      { label: 'Metadata', icon: 'metadata', chevron: true },
-      { label: 'Document management', icon: 'documentManagement', chevron: true },
-      { label: 'Search', icon: 'search', chevron: true },
+      {
+        label: 'Metadata',
+        icon: 'metadata',
+        expanded: true,
+        children: [{ label: 'Descriptors' }, { label: 'Value lists' }],
+      },
+      {
+        label: 'Document management',
+        icon: 'documentManagement',
+        expanded: true,
+        children: [{ label: 'Document classes' }, { label: 'Workspaces' }],
+      },
+      {
+        label: 'Search',
+        icon: 'search',
+        expanded: true,
+        children: [{ label: 'Search classes' }, { label: 'Result lists' }],
+      },
       { label: 'Template designer', icon: 'templateDesigner', external: true },
     ],
   },
   {
     title: 'Access & Security',
     items: [
-      { label: 'Organization', icon: 'organization', chevron: true },
-      { label: 'Access control', icon: 'accessControl', chevron: true },
+      {
+        label: 'Organization',
+        icon: 'organization',
+        expanded: true,
+        children: [{ label: 'Users' }, { label: 'Groups' }, { label: 'Units & roles' }],
+      },
+      { label: 'Access rules', icon: 'accessControl' },
       { label: 'Retention rules', icon: 'retentionRules' },
     ],
   },
@@ -89,11 +128,29 @@ const groupedItems = [
     title: 'Operations',
     items: [
       { label: 'Timeslices', icon: 'timeslices' },
-      { label: 'Agents & Webhooks', icon: 'agentsWebhooks', chevron: true },
-      { label: 'Fulltext', icon: 'fulltext', chevron: true },
-      { label: 'File import (FIPS)', icon: 'fileImport', chevron: true },
-      { label: 'Storage jobs', icon: 'storageJobs', chevron: true },
-      { label: 'System status', icon: 'systemStatus', chevron: true },
+      {
+        label: 'Agents & Webhooks',
+        icon: 'agentsWebhooks',
+        expanded: true,
+        children: [
+          { label: 'Agent configuration' },
+          { label: 'Agent jobs' },
+          { label: 'Incoming webhooks' },
+          { label: 'Outgoing webhooks' },
+        ],
+      },
+      {
+        label: 'Fulltext',
+        icon: 'fulltext',
+        expanded: true,
+        children: [{ label: 'Indexes' }, { label: 'Jobs' }],
+      },
+      {
+        label: 'File import (FIPS)',
+        icon: 'fileImport',
+        expanded: true,
+        children: [{ label: 'Configuration' }, { label: 'Jobs' }],
+      },
     ],
   },
 ];
@@ -104,8 +161,34 @@ function isItemActive(label) {
   return selectedItem.value === label;
 }
 
+function hasChildren(item) {
+  return Boolean(item.children?.length);
+}
+
+function isMenuOpen(item) {
+  return openMenus.value.has(item.label);
+}
+
 function selectItem(item) {
+  if (hasChildren(item)) {
+    toggleMenu(item);
+    return;
+  }
   selectedItem.value = item.label;
+}
+
+function toggleMenu(item) {
+  if (!hasChildren(item)) {
+    return;
+  }
+
+  if (openMenus.value.has(item.label)) {
+    openMenus.value.delete(item.label);
+  } else {
+    openMenus.value.add(item.label);
+  }
+
+  openMenus.value = new Set(openMenus.value);
 }
 
 function toggleSidebar() {
@@ -145,38 +228,13 @@ function toggleSidebar() {
       <aside class="sidebar">
         <div class="sidebar__main">
           <section class="sidebar__cluster sidebar__cluster--general" aria-label="General">
-            <button
-              v-for="item in generalItems"
-              :key="item.label"
-              type="button"
-              class="menu-item"
-              :class="{ 'is-active': isItemActive(item.label) }"
-              :aria-current="isItemActive(item.label) ? 'page' : undefined"
-              :title="isCollapsed ? item.label : undefined"
-              @click="selectItem(item)"
-            >
-              <span class="menu-item__content">
-                <span class="menu-item__lead">
-                  <img class="menu-icon" :src="icons[item.icon]" alt="" />
-                  <span v-if="!isCollapsed" class="menu-item__label">{{ item.label }}</span>
-                </span>
-                <span v-if="!isCollapsed && item.chevron" class="menu-item__meta">
-                  <img class="menu-icon menu-icon--small" :src="icons.chevron" alt="" />
-                </span>
-              </span>
-            </button>
-          </section>
-
-          <section class="sidebar__cluster sidebar__cluster--grouped" aria-label="Configuration areas">
-            <div v-for="group in groupedItems" :key="group.title" class="menu-group">
-              <header v-if="!isCollapsed" class="menu-group__header">{{ group.title }}</header>
+            <div v-for="item in generalItems" :key="item.label" class="menu-block">
               <button
-                v-for="item in group.items"
-                :key="item.label"
                 type="button"
                 class="menu-item"
-                :class="{ 'is-active': isItemActive(item.label) }"
+                :class="{ 'is-active': isItemActive(item.label), 'menu-item--expandable': hasChildren(item) }"
                 :aria-current="isItemActive(item.label) ? 'page' : undefined"
+                :aria-expanded="hasChildren(item) ? String(isMenuOpen(item)) : undefined"
                 :title="isCollapsed ? item.label : undefined"
                 @click="selectItem(item)"
               >
@@ -188,11 +246,106 @@ function toggleSidebar() {
                   <span v-if="!isCollapsed && item.external" class="menu-item__meta">
                     <img class="menu-icon menu-icon--small" :src="icons.external" alt="" />
                   </span>
-                  <span v-else-if="!isCollapsed && item.chevron" class="menu-item__meta">
-                    <img class="menu-icon menu-icon--small" :src="icons.chevron" alt="" />
-                  </span>
+                  <button
+                    v-else-if="!isCollapsed && hasChildren(item)"
+                    type="button"
+                    class="menu-item__toggle"
+                    :aria-label="`${isMenuOpen(item) ? 'Collapse' : 'Expand'} ${item.label}`"
+                    @click.stop="toggleMenu(item)"
+                  >
+                    <img
+                      class="menu-icon menu-icon--small"
+                      :class="{ 'menu-icon--expanded': isMenuOpen(item) }"
+                      :src="icons.chevron"
+                      alt=""
+                    />
+                  </button>
                 </span>
               </button>
+
+              <div v-if="!isCollapsed && hasChildren(item) && isMenuOpen(item)" class="submenu">
+                <button
+                  v-for="child in item.children"
+                  :key="child.label"
+                  type="button"
+                  class="submenu-item"
+                  :class="{ 'is-active': isItemActive(child.label) }"
+                  :aria-current="isItemActive(child.label) ? 'page' : undefined"
+                  @click="selectItem(child)"
+                >
+                  <span class="submenu-item__label">{{ child.label }}</span>
+                  <img
+                    v-if="child.external"
+                    class="menu-icon menu-icon--small"
+                    :src="icons.external"
+                    alt=""
+                  />
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <section class="sidebar__cluster sidebar__cluster--grouped" aria-label="Configuration areas">
+            <div v-for="group in groupedItems" :key="group.title" class="menu-group">
+              <header class="menu-group__header" :class="{ 'menu-group__header--collapsed': isCollapsed }">
+                <span v-if="!isCollapsed">{{ group.title }}</span>
+                <span v-else class="menu-group__divider" aria-hidden="true"></span>
+              </header>
+              <div v-for="item in group.items" :key="item.label" class="menu-block">
+                <button
+                  type="button"
+                  class="menu-item"
+                  :class="{ 'is-active': isItemActive(item.label), 'menu-item--expandable': hasChildren(item) }"
+                  :aria-current="isItemActive(item.label) ? 'page' : undefined"
+                  :aria-expanded="hasChildren(item) ? String(isMenuOpen(item)) : undefined"
+                  :title="isCollapsed ? item.label : undefined"
+                  @click="selectItem(item)"
+                >
+                  <span class="menu-item__content">
+                    <span class="menu-item__lead">
+                      <img class="menu-icon" :src="icons[item.icon]" alt="" />
+                      <span v-if="!isCollapsed" class="menu-item__label">{{ item.label }}</span>
+                    </span>
+                    <span v-if="!isCollapsed && item.external" class="menu-item__meta">
+                      <img class="menu-icon menu-icon--small" :src="icons.external" alt="" />
+                    </span>
+                    <button
+                      v-else-if="!isCollapsed && hasChildren(item)"
+                      type="button"
+                      class="menu-item__toggle"
+                      :aria-label="`${isMenuOpen(item) ? 'Collapse' : 'Expand'} ${item.label}`"
+                      @click.stop="toggleMenu(item)"
+                    >
+                      <img
+                        class="menu-icon menu-icon--small"
+                        :class="{ 'menu-icon--expanded': isMenuOpen(item) }"
+                        :src="icons.chevron"
+                        alt=""
+                      />
+                    </button>
+                  </span>
+                </button>
+
+                <div v-if="!isCollapsed && hasChildren(item) && isMenuOpen(item)" class="submenu">
+                  <button
+                    v-for="child in item.children"
+                    :key="child.label"
+                    type="button"
+                    class="submenu-item"
+                    :class="{ 'is-active': isItemActive(child.label) }"
+                    :aria-current="isItemActive(child.label) ? 'page' : undefined"
+                    @click="selectItem(child)"
+                  >
+                    <span class="submenu-item__label">{{ child.label }}</span>
+                    <img
+                      v-if="child.external"
+                      class="menu-icon menu-icon--small"
+                      :src="icons.external"
+                      alt=""
+                    />
+                  </button>
+                </div>
+              </div>
             </div>
           </section>
         </div>
