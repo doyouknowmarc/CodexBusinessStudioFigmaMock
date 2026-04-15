@@ -19,10 +19,14 @@ import link04 from './data/icons/link-04.svg';
 import linkExternal02 from './data/icons/link-external-02.svg';
 import lockUnlocked03 from './data/icons/lock-unlocked-03.svg';
 import scale01 from './data/icons/scale-01.svg';
+import searchLg from './data/icons/search-lg.svg';
 import searchSm from './data/icons/search-sm.svg';
 import server03 from './data/icons/server-03.svg';
 import server04 from './data/icons/server-04.svg';
 import tool02 from './data/icons/tool-02.svg';
+import bell01 from './data/icons/bell-01.svg';
+import helpCircle from './data/icons/help-circle.svg';
+import unionLogo from './data/icons/Union.svg';
 
 const selectedItem = ref('Applications');
 const isCollapsed = ref(false);
@@ -111,36 +115,38 @@ function toggleSidebar() {
 
 <template>
   <div class="app-shell" :class="{ 'is-collapsed': isCollapsed }">
-    <aside class="sidebar">
-      <div class="sidebar__main">
-        <section class="sidebar__cluster sidebar__cluster--general" aria-label="General">
-          <button
-            v-for="item in generalItems"
-            :key="item.label"
-            type="button"
-            class="menu-item"
-            :class="{ 'is-active': isItemActive(item.label) }"
-            :aria-current="isItemActive(item.label) ? 'page' : undefined"
-            :title="isCollapsed ? item.label : undefined"
-            @click="selectItem(item)"
-          >
-            <span class="menu-item__content">
-              <span class="menu-item__lead">
-                <img class="menu-icon" :src="icons[item.icon]" alt="" />
-                <span v-if="!isCollapsed" class="menu-item__label">{{ item.label }}</span>
-              </span>
-              <span v-if="!isCollapsed && item.chevron" class="menu-item__meta">
-                <img class="menu-icon menu-icon--small" :src="icons.chevron" alt="" />
-              </span>
-            </span>
-          </button>
-        </section>
+    <header class="topbar">
+      <div class="topbar__brand" aria-label="Doxis Business Studio">
+        <img class="topbar__logo-mark" :src="unionLogo" alt="Doxis" />
+        <div class="topbar__subtitle">Business Studio</div>
+      </div>
 
-        <section class="sidebar__cluster sidebar__cluster--grouped" aria-label="Configuration areas">
-          <div v-for="group in groupedItems" :key="group.title" class="menu-group">
-            <header v-if="!isCollapsed" class="menu-group__header">{{ group.title }}</header>
+      <label class="topbar__search" aria-label="Search">
+        <img class="topbar__search-icon" :src="searchLg" alt="" />
+        <input type="text" placeholder="Search" />
+      </label>
+
+      <div class="topbar__actions">
+        <button type="button" class="topbar__icon-button" aria-label="Notifications">
+          <img class="topbar__action-icon" :src="bell01" alt="" />
+        </button>
+        <button type="button" class="topbar__icon-button" aria-label="Help">
+          <img class="topbar__action-icon" :src="helpCircle" alt="" />
+        </button>
+        <button type="button" class="topbar__avatar" aria-label="User menu">
+          <span class="topbar__avatar-ring">
+            <span class="topbar__avatar-face">O</span>
+          </span>
+        </button>
+      </div>
+    </header>
+
+    <div class="shell-body">
+      <aside class="sidebar">
+        <div class="sidebar__main">
+          <section class="sidebar__cluster sidebar__cluster--general" aria-label="General">
             <button
-              v-for="item in group.items"
+              v-for="item in generalItems"
               :key="item.label"
               type="button"
               class="menu-item"
@@ -154,45 +160,70 @@ function toggleSidebar() {
                   <img class="menu-icon" :src="icons[item.icon]" alt="" />
                   <span v-if="!isCollapsed" class="menu-item__label">{{ item.label }}</span>
                 </span>
-                <span v-if="!isCollapsed && item.external" class="menu-item__meta">
-                  <img class="menu-icon menu-icon--small" :src="icons.external" alt="" />
-                </span>
-                <span v-else-if="!isCollapsed && item.chevron" class="menu-item__meta">
+                <span v-if="!isCollapsed && item.chevron" class="menu-item__meta">
                   <img class="menu-icon menu-icon--small" :src="icons.chevron" alt="" />
                 </span>
               </span>
             </button>
-          </div>
-        </section>
-      </div>
+          </section>
 
-      <footer class="sidebar__footer">
-        <button
-          type="button"
-          class="menu-item menu-item--footer"
-          :title="collapseLabel"
-          @click="toggleSidebar"
-        >
-          <span class="menu-item__content">
-            <span class="menu-item__lead">
-              <img class="menu-icon" :src="icons.collapse" alt="" />
-              <span v-if="!isCollapsed" class="menu-item__label">{{ collapseLabel }}</span>
+          <section class="sidebar__cluster sidebar__cluster--grouped" aria-label="Configuration areas">
+            <div v-for="group in groupedItems" :key="group.title" class="menu-group">
+              <header v-if="!isCollapsed" class="menu-group__header">{{ group.title }}</header>
+              <button
+                v-for="item in group.items"
+                :key="item.label"
+                type="button"
+                class="menu-item"
+                :class="{ 'is-active': isItemActive(item.label) }"
+                :aria-current="isItemActive(item.label) ? 'page' : undefined"
+                :title="isCollapsed ? item.label : undefined"
+                @click="selectItem(item)"
+              >
+                <span class="menu-item__content">
+                  <span class="menu-item__lead">
+                    <img class="menu-icon" :src="icons[item.icon]" alt="" />
+                    <span v-if="!isCollapsed" class="menu-item__label">{{ item.label }}</span>
+                  </span>
+                  <span v-if="!isCollapsed && item.external" class="menu-item__meta">
+                    <img class="menu-icon menu-icon--small" :src="icons.external" alt="" />
+                  </span>
+                  <span v-else-if="!isCollapsed && item.chevron" class="menu-item__meta">
+                    <img class="menu-icon menu-icon--small" :src="icons.chevron" alt="" />
+                  </span>
+                </span>
+              </button>
+            </div>
+          </section>
+        </div>
+
+        <footer class="sidebar__footer">
+          <button
+            type="button"
+            class="menu-item menu-item--footer"
+            :title="collapseLabel"
+            @click="toggleSidebar"
+          >
+            <span class="menu-item__content">
+              <span class="menu-item__lead">
+                <img class="menu-icon" :src="icons.collapse" alt="" />
+                <span v-if="!isCollapsed" class="menu-item__label">{{ collapseLabel }}</span>
+              </span>
             </span>
-          </span>
-        </button>
-      </footer>
-    </aside>
+          </button>
+        </footer>
+      </aside>
 
-    <main class="workspace" aria-live="polite">
-      <div class="workspace__content">
-        <p class="workspace__eyebrow">Vue prototype</p>
-        <h1 class="workspace__title">{{ selectedItem }}</h1>
-        <p class="workspace__copy">
-          The left navigation mirrors the Figma node with the same 260px width, section
-          structure, row rhythm, and active-state treatment. The right side stays intentionally
-          quiet so the sidebar remains the primary surface.
-        </p>
-      </div>
-    </main>
+      <main class="workspace" aria-live="polite">
+        <div class="workspace__content">
+          <p class="workspace__eyebrow">Vue prototype</p>
+          <h1 class="workspace__title">{{ selectedItem }}</h1>
+          <p class="workspace__copy">
+            The layout now includes the missing top navigation from Figma above the menu, while
+            preserving the sidebar dimensions and interaction states from the previous pass.
+          </p>
+        </div>
+      </main>
+    </div>
   </div>
 </template>
