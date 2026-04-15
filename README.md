@@ -33,6 +33,12 @@ Open that URL in your browser to review the implementation.
 npm run build
 ```
 
+## Deploy to GitHub Pages
+
+GitHub Actions deploys the app to GitHub Pages automatically on every push to `main`.
+
+After pushing these files, make sure the repository Pages setting uses `GitHub Actions` as the source.
+
 ## Project structure
 
 - `src/App.vue`: sidebar implementation
